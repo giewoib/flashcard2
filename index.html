@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador de Senhas · Geovana</title>
+  <!-- Arquivos CSS e JS separados (inline para demonstração, mas com estrutura separada) -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Pré-carregar fontes e ícones -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <header class="header">
+    <h1>🔐 Gerador de Senhas</h1>
+    <p class="subtitle">Seguro · Prático · Bonito</p>
+  </header>
+
+  <!-- Corpo principal -->
+  <main class="main-container">
+    <section class="card">
+      <div class="password-display" id="passwordDisplay">Clique em gerar</div>
+      
+      <div class="options">
+        <label class="option-item">
+          <input type="checkbox" id="includeUppercase" checked> Maiúsculas
+        </label>
+        <label class="option-item">
+          <input type="checkbox" id="includeLowercase" checked> Minúsculas
+        </label>
+        <label class="option-item">
+          <input type="checkbox" id="includeNumbers" checked> Números
+        </label>
+        <label class="option-item">
+          <input type="checkbox" id="includeSymbols" checked> Símbolos
+        </label>
+      </div>
+
+      <div class="length-control">
+        <label for="lengthSlider">Comprimento: <span id="lengthValue">16</span></label>
+        <input type="range" id="lengthSlider" min="8" max="32" value="16">
+      </div>
+
+      <div class="actions">
+        <button class="btn-generate" id="generateBtn">✨ Gerar Senha</button>
+        <button class="btn-copy" id="copyBtn">📋 Copiar</button>
+      </div>
+    </section>
+
+    <!-- Rodapé com assinatura e links (dentro do main para manter estrutura semântica) -->
+    <footer class="footer">
+      <p class="footer-text">
+        Gerador de Senhas da Aluna Geovana • Desenvolvido por Geovana Beatricy<br>
+        Projeto para estudo de JavaScript • 
+        <a href="#" class="footer-link">GitHub</a> •
+        <span class="heart">❤️</span>
+      </p>
+    </footer>
+  </main>
+
+  <!-- JavaScript separado (arquivo externo) -->
+  <script src="script.js"></script>
+</body>
+</html>
