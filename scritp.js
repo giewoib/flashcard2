@@ -1,4 +1,4 @@
-// script.js - Arquivo JavaScript separado
+// script.js - Arquivo JavaScript separado (CORRIGIDO)
 (function() {
   "use strict";
 
@@ -27,11 +27,10 @@
   lengthSlider.addEventListener('input', updateLengthLabel);
   updateLengthLabel();
 
-  // Função principal de geração de senha
+  // Função principal de geração de senha (CORRIGIDA)
   function generatePassword() {
     const length = parseInt(lengthSlider.value, 10);
     let charSet = '';
-    let password = '';
 
     // Monta o conjunto de caracteres baseado nas opções
     if (includeUppercase.checked) charSet += UPPER;
@@ -42,41 +41,46 @@
     // Validação: se nenhuma opção estiver marcada, usar padrão (minúsculas + números)
     if (charSet.length === 0) {
       charSet = LOWER + NUMBERS;
-      // Opcional: marcar alguns checkboxes para feedback visual
       includeLowercase.checked = true;
       includeNumbers.checked = true;
     }
 
-    // Gera a senha com segurança (usando crypto.getRandomValues)
+    // Gera a senha usando crypto.getRandomValues
     const charArray = charSet.split('');
-    const randomValues = new Uint32Array(length);
-    crypto.getRandomValues(randomValues);
-
+    let password = '';
+    
+    // Usando Uint8Array para melhor performance
+    const randomBytes = new Uint8Array(length);
+    crypto.getRandomValues(randomBytes);
+    
     for (let i = 0; i < length; i++) {
-      const index = randomValues[i] % charArray.length;
+      const index = randomBytes[i] % charArray.length;
       password += charArray[index];
     }
 
     // Garantir que a senha contenha pelo menos um caractere de cada tipo selecionado
-    // (para maior segurança, mas mantendo a aleatoriedade)
-    let ensured = false;
-    // Se o usuário selecionou vários tipos, tentamos incluir pelo menos um de cada
     const selectedTypes = [];
     if (includeUppercase.checked) selectedTypes.push(UPPER);
     if (includeLowercase.checked) selectedTypes.push(LOWER);
     if (includeNumbers.checked) selectedTypes.push(NUMBERS);
     if (includeSymbols.checked) selectedTypes.push(SYMBOLS);
 
+    // Se temos múltiplos tipos e o comprimento é suficiente, garantir diversidade
     if (selectedTypes.length > 1 && length >= selectedTypes.length) {
-      // Faz uma segunda passagem para garantir diversidade (substitui caracteres)
       let passwordArray = password.split('');
       // Embaralha posições para inserir caracteres obrigatórios
       for (let i = 0; i < selectedTypes.length; i++) {
         const typeChars = selectedTypes[i];
-        const randomIndex = Math.floor(Math.random() * passwordArray.length);
+        // Escolhe uma posição aleatória que ainda não foi modificada
+        let randomIndex;
+        let attempts = 0;
+        do {
+          randomIndex = Math.floor(Math.random() * passwordArray.length);
+          attempts++;
+        } while (attempts < 20 && passwordArray[randomIndex] === '#'); // Evita loop infinito
+        
         // Pega um caractere aleatório do tipo correspondente
-        const charSetType = typeChars;
-        const randomChar = charSetType[Math.floor(Math.random() * charSetType.length)];
+        const randomChar = typeChars[Math.floor(Math.random() * typeChars.length)];
         passwordArray[randomIndex] = randomChar;
       }
       password = passwordArray.join('');
@@ -91,8 +95,11 @@
     passwordDisplay.textContent = newPassword;
   }
 
-  // Evento do botão gerar
-  generateBtn.addEventListener('click', refreshPassword);
+  // Evento do botão gerar (CORRIGIDO)
+  generateBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    refreshPassword();
+  });
 
   // Evento do botão copiar
   copyBtn.addEventListener('click', async function() {
@@ -117,33 +124,32 @@
   });
 
   // Gera uma senha ao carregar a página
-  window.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener('DOMContentLoaded', function() {
     refreshPassword();
   });
 
-  // Opção extra: ao alterar qualquer checkbox ou slider, regenerar automaticamente?
-  // (deixamos manual, mas podemos adicionar um "refresh" automático se preferir)
-  // Vamos adicionar um pequeno atalho: duplo clique no display gera nova senha
+  // Duplo clique no display gera nova senha
   passwordDisplay.addEventListener('dblclick', refreshPassword);
 
-  // E também ao pressionar Enter no slider (para acessibilidade)
-  lengthSlider.addEventListener('keydown', (e) => {
+  // Enter no slider gera nova senha
+  lengthSlider.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
       refreshPassword();
     }
   });
 
-  // Ajuste fino: se o usuário marcar/desmarcar opções, podemos regenerar? 
-  // Vamos manter a geração manual, mas com um "toque" extra: 
-  // ao clicar em qualquer checkbox, se o usuário quiser, pode gerar novamente.
-  // Mas não forçamos para não sobrecarregar. Vamos apenas adicionar um indicador visual.
+  // Feedback visual ao alterar checkboxes
   const optionCheckboxes = [includeUppercase, includeLowercase, includeNumbers, includeSymbols];
-  optionCheckboxes.forEach(checkbox => {
-    checkbox.addEventListener('change', () => {
-      // Pequeno feedback: mudar opacidade do display
+  optionCheckboxes.forEach(function(checkbox) {
+    checkbox.addEventListener('change', function() {
       passwordDisplay.style.opacity = '0.7';
-      setTimeout(() => passwordDisplay.style.opacity = '1', 300);
+      setTimeout(function() {
+        passwordDisplay.style.opacity = '1';
+      }, 300);
     });
   });
 
+  // Teste rápido para verificar se a função está funcionando
+  console.log('Gerador de Senhas inicializado!');
+  console.log('Senha de teste:', generatePassword());
 })();
